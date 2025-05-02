@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Realization Quiz</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <style>
+        :root {
+            --primary-color: #6366F1;
+            --primary-light: #818CF8;
+            --primary-dark: #4F46E5;
+            --secondary-color: #F472B6;
+            --neutral-100: #F3F4F6;
+            --neutral-200: #E5E7EB;
+            --neutral-300: #D1D5DB;
+            --neutral-600: #4B5563;
+            --neutral-700: #374151;
+            --neutral-800: #1F2937;
+            --success-color: #10B981;
+            --success-light: #D1FAE5;
+            --error-color: #EF4444;
+            --error-light: #FEE2E2;
+            --gradient-start: #6366F1;
+            --gradient-end: #8B5CF6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #F9FAFB 0%, #E5E7EB 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--neutral-800);
+            line-height: 1.6;
+        }
+
+        #quiz-container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            width: 94%;
+            max-width: 700px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .header {
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            padding: 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .header:after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            filter: blur(10px);
+            opacity: 0.7;
+        }
+
+        h1 {
+            font-weight: 700;
+            margin: 0;
+            font-size: 1.8rem;
+            letter-spacing: -0.5px;
+        }
+
+        .quiz-content {
+            padding: 35px 40px;
+        }
+
+        #question-container {
+            margin-bottom: 25px;
+        }
+
+        #question {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin-bottom: 28px;
+            color: var(--neutral-800);
+            min-height: 60px;
+            line-height: 1.5;
+        }
+
+        #options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        #options button {
+            display: flex;
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid var(--neutral-200);
+            border-radius: 12px;
+            background-color: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            color: var(--neutral-700);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #options button:hover:not(:disabled) {
+            border-color: var(--primary-light);
+            background-color: #F5F7FF;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+        }
+
+        #options button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        #options button:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        #options button:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: transparent;
+            transition: background-color 0.2s;
+        }
+
+        #options button:hover:before:not(:disabled) {
+            background-color: var(--primary-color);
+        }
+
+        .correct {
+            border-color: var(--success-color) !important;
+            background-color: var(--success-light) !important;
+            color: var(--success-color) !important;
+            font-weight: 600 !important;
+        }
+
+        .correct:before {
+            background-color: var(--success-color) !important;
+        }
+
+        .incorrect {
+            border-color: var(--error-color) !important;
+            background-color: var(--error-light) !important;
+            color: var(--error-color) !important;
+            font-weight: 600 !important;
+        }
+
+        .incorrect:before {
+            background-color: var(--error-color) !important;
+        }
+
+        #result {
+            margin-top: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            min-height: 30px;
+            text-align: center;
+            padding: 5px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .result-correct {
+            background-color: var(--success-light);
+            color: var(--success-color);
+        }
+
+        .result-incorrect {
+            background-color: var(--error-light);
+            color: var(--error-color);
+        }
+
+        #progress-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        #progress-text {
+            font-size: 0.9rem;
+            color: var(--neutral-600);
+        }
+
+        #progress-bar-container {
+            flex-grow: 1;
+            height: 8px;
+            background-color: var(--neutral-200);
+            border-radius: 4px;
+            margin: 0 15px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        #final-score-container {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        #final-score {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 20px 0;
+            color: var(--primary-dark);
+        }
+
+        .score-detail {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            color: var(--neutral-700);
+        }
+
+        .score-circle {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 30px;
+        }
+
+        .circle-bg {
+            fill: none;
+            stroke: var(--neutral-200);
+            stroke-width: 12;
+        }
+
+        .circle-progress {
+            fill: none;
+            stroke: url(#gradient);
+            stroke-width: 12;
+            stroke-linecap: round;
+            transform-origin: center;
+            transform: rotate(-90deg);
+            transition: stroke-dasharray 0.8s ease;
+        }
+
+        .score-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        #restart-button {
+            background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        #restart-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        #restart-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .options-container {
+            opacity: 0;
+            animation: fadeIn 0.5s ease forwards;
+            animation-delay: 0.2s;
+        }
+
+        /* Confetti for perfect score */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .quiz-content {
+                padding: 25px 20px;
+            }
+            
+            #question {
+                font-size: 1.1rem;
+            }
+            
+            #options button {
+                padding: 14px 16px;
+                font-size: 0.95rem;
+            }
+            
+            #final-score {
+                font-size: 1.8rem;
+            }
+            
+            .score-circle {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .score-text {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="confetti-canvas"></canvas>
+    <div id="quiz-container" class="fade-in">
+        <div class="header">
+            <h1>Product Realization Quiz</h1>
+        </div>
+        <div class="quiz-content">
+            <div id="question-container">
+                <p id="question" class="fade-in">Loading question...</p>
+                <div id="options" class="options-container">
+                    <!-- Options will be populated here -->
+                </div>
+            </div>
+            <div id="result"></div>
+            <div id="progress-container">
+                <div id="progress-text">Question 1 of 30</div>
+                <div id="progress-bar-container">
+                    <div id="progress-bar" style="width: 3.33%"></div>
+                </div>
+                <div id="progress-percentage">3%</div>
+            </div>
+            <div id="final-score-container" style="display: none;">
+                <div class="score-circle">
+                    <svg width="180" height="180" viewBox="0 0 180 180">
+                        <defs>
+                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#6366F1" />
+                                <stop offset="100%" stop-color="#8B5CF6" />
+                            </linearGradient>
+                        </defs>
+                        <circle class="circle-bg" cx="90" cy="90" r="80"></circle>
+                        <circle class="circle-progress" cx="90" cy="90" r="80" stroke-dasharray="0 502.4" stroke-dashoffset="0"></circle>
+                    </svg>
+                    <div class="score-text">0%</div>
+                </div>
+                <p id="final-score">Your Score: 0/30</p>
+                <p class="score-detail">Great effort! Keep learning and improving.</p>
+                <button id="restart-button">Restart Quiz</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/confetti-js/0.0.18/confetti.min.js"></script>
+    <script>
+        // --- Quiz Data ---
+        const quizData = [
+        {
+          "question": "___________ is a systematic, creative and iterative process that results in developing components and systems in Product Realization Process.",
+          "options": [
+            "Problem Definition",
+            "Engineering Design",
+            "Analytical Process",
+            "Creative Process"
+          ],
+          "answer": "Engineering Design"
+        },
+        {
+          "question": "Which team of designer and developer of product can expand up to dozens, hundreds or even thousands of teammates having a common goal?",
+          "options": [
+            "Core team",
+            "Extended team",
+            "External team",
+            "None of these"
+          ],
+          "answer": "Extended team"
+        },
+        {
+          "question": "The DFM concept includes careful and organized study of all the various issues and mandates the integration of all the relevant data.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "Interchangeability is a process of ensuring that manufactured parts should be within a specific __________.",
+          "options": [
+            "Color range",
+            "Tolerance limit",
+            "Weight category",
+            "Temperature range"
+          ],
+          "answer": "Tolerance limit"
+        },
+        {
+          "question": "What is the third phase in the S curve?",
+          "options": [
+            "Slow growth phase",
+            "Rapid growth phase",
+            "Leveling off phase",
+            "None of these"
+          ],
+          "answer": "Leveling off phase"
+        },
+        {
+          "question": "Formulating the problem is the last step in Krick’s basic engineering problem-solving process.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "What is considered most crucial for consumer faith in a product?",
+          "options": [
+            "Brand reputation",
+            "Limited functionality",
+            "Unsatisfactory performance",
+            "Functionality and performance"
+          ],
+          "answer": "Functionality and performance"
+        },
+        {
+          "question": "Production-consumption cycle is one of the most important features of socio-ecological system.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "Which of the following is an example of mass production?",
+          "options": [
+            "Customized furniture",
+            "Handmade crafts",
+            "Manufacturing smartphones",
+            "One-of-a-kind artwork"
+          ],
+          "answer": "Manufacturing smartphones"
+        },
+        {
+          "question": "After a maturity period, the product is characterized by a growth in sales and profits only.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "A _________ is the identification of the need that is unfulfilled.",
+          "options": [
+            "product",
+            "problem",
+            "weight",
+            "value"
+          ],
+          "answer": "problem"
+        },
+        {
+          "question": "The morphology of design is the study of the chronological structure of design projects.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "Which is the third process in the production-consumption cycle?",
+          "options": [
+            "Transportation",
+            "Consumption",
+            "Planning",
+            "Designing"
+          ],
+          "answer": "Consumption"
+        },
+        {
+          "question": "What are the key factors of successful products in product development?",
+          "options": [
+            "Distinctiveness",
+            "Customer focus and market orientation",
+            "Preparedness",
+            "All of these"
+          ],
+          "answer": "All of these"
+        },
+        {
+          "question": "An aspect of durability is maintenance and repair.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "Which key factor develops an intensive understanding of the trait of the market.",
+          "options": [
+            "Customer focus and market orientation",
+            "Preparedness",
+            "Distinctiveness",
+            "Time"
+          ],
+          "answer": "Customer focus and market orientation"
+        },
+        {
+          "question": "What is the fourth process in the product-consumption cycle of morphology of design?",
+          "options": [
+            "Design for safety",
+            "Disposal of the retired product",
+            "Planning the warehouse systems",
+            "Finding design alternative"
+          ],
+          "answer": "Disposal of the retired product"
+        },
+        {
+          "question": "The cost analysis is done to analyze the achievements of the product.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "In developing provisional designs, innovative ideas generated through imagination or through real life is called as:",
+          "options": [
+            "Direct analogy",
+            "Symbolic analogies",
+            "Fantasy analogies",
+            "Indirect analogies"
+          ],
+          "answer": "Fantasy analogies"
+        },
+        {
+          "question": "Which of the following factors is not included in the design for consumption?",
+          "options": [
+            "Designing to reduce the rate of obsolescence",
+            "Design for operational economy",
+            "Design for reliability",
+            "Design for safety"
+          ],
+          "answer": "Designing to reduce the rate of obsolescence"
+        },
+        {
+          "question": "Which design principle involves the application of phi and fractals in aesthetic design?",
+          "options": [
+            "Forms/shapes",
+            "Material strength",
+            "Proportions",
+            "Colors"
+          ],
+          "answer": "Proportions"
+        },
+        {
+          "question": "The psychological impact of a line is not influenced by its direction and weight.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "Which term refers to a hue with added black?",
+          "options": [
+            "Tint",
+            "Tone",
+            "Shade",
+            "Complement"
+          ],
+          "answer": "Tone"
+        },
+        {
+          "question": "What is the most common characteristic of neutral colors in terms of representation using hue?",
+          "options": [
+            "Exciting",
+            "Calming",
+            "Unifying",
+            "Mixed cool/warm"
+          ],
+          "answer": "Unifying"
+        },
+        {
+          "question": "Feeling of strength and weight of size is associated with the illusion of depth.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "How many kinds of visual designs are there in balance?",
+          "options": [
+            "Four",
+            "Two",
+            "Three",
+            "Five"
+          ],
+          "answer": "Three"
+        },
+        {
+          "question": "In the context of design, ratio majorly defines the overall ______ with respect to its surroundings.",
+          "options": [
+            "Size",
+            "Weight",
+            "Mass",
+            "Space"
+          ],
+          "answer": "Size"
+        },
+        {
+          "question": "_______ is the variation of the duration of sounds/visual elements or other events over time.",
+          "options": [
+            "Harmony",
+            "Rhythm",
+            "Unity",
+            "Belongings"
+          ],
+          "answer": "Rhythm"
+        },
+        {
+          "question": "What are the reasons for the customer purchasing a product?",
+          "options": [
+            "The product performs well",
+            "Simple to utilize",
+            "Well-known to them",
+            "All of these"
+          ],
+          "answer": "All of these"
+        },
+        {
+          "question": "Product Development groups should make utilization of market studies customer meetings and conceptualizing.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "Who is credited with the developing the Function Analysis Technique (FAST) diagramming during the 1960s?",
+          "options": [
+            "Mr. Lawrence D. Miles",
+            "Mr. Charles Bytheway",
+            "U.S. Navy Bureau of Ships",
+            "General Service Administration (GSA)"
+          ],
+          "answer": "Mr. Charles Bytheway"
+        },
+        {
+          "question": "The Creative phase develops ideas for alternative ways to perform each function selected for further study.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "____________ organizes awareness training programs and workshops conducted by Certified Value Specialists?",
+          "options": [
+            "INVEST",
+            "QFD",
+            "HOQ",
+            "None of these"
+          ],
+          "answer": "INVEST"
+        },
+        {
+          "question": "Value Engineering is a problem-solving technique.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "Value Analysis (VA)/Value Engineering (VE) is _____ oriented.",
+          "options": [
+            "Item",
+            "Function",
+            "Cost",
+            "Object"
+          ],
+          "answer": "Function"
+        },
+        {
+          "question": "The Information Phase involves only individual efforts and not teamwork.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "All functions should be classified into two levels of importance, which are:",
+          "options": [
+            "Primary and secondary",
+            "Verb and noun",
+            "Internal and external",
+            "Direct and indirect"
+          ],
+          "answer": "Primary and secondary"
+        },
+        {
+          "question": "Secondary functions support the primary function but do not directly accomplish it.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "Functions having VIP Index more than ‘1’ are called as:",
+          "options": [
+            "True Value",
+            "Poor Value",
+            "High Value",
+            "Real Value"
+          ],
+          "answer": "Poor Value"
+        },
+        {
+          "question": "The objective of the evaluation phase of the Value Engineering Job Plan is to analyze the result to the creative phase.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "Usually screening, ranking, and cost optimization processes are used to arrive at the best combination of materials.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "In ________ process, metal bites are forced by a mechanically or hydraulically actuated ram through a die hole of the desired shape or around a punch.",
+          "options": [
+            "Extrusion",
+            "Casting",
+            "Rolling",
+            "3D printing"
+          ],
+          "answer": "Extrusion"
+        },
+        {
+          "question": "__________ is a machining process that uses a toothed tool, called a broach, to remove material.",
+          "options": [
+            "Broaching",
+            "Shaping",
+            "Planning",
+            "Forging"
+          ],
+          "answer": "Broaching"
+        },
+        {
+          "question": "The tertiary process of manufacturing consists of finishing processes, such as surface treatments and heat treatments.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "_________ involves heating steel and then keeping it at that temperature for a period of time and then cooling it in air.",
+          "options": [
+            "Annealing",
+            "Normalizing",
+            "Tempering",
+            "Hardening"
+          ],
+          "answer": "Normalizing"
+        },
+        {
+          "question": "_____________ consists of finishing processes such as surface treatments and heat treatments.",
+          "options": [
+            "Primary process",
+            "Secondary process",
+            "Tertiary process",
+            "None of these"
+          ],
+          "answer": "Tertiary process"
+        },
+        {
+          "question": "Facing is a special case of turning in which the major motion is perpendicular to the axis of rotation.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "__________ is the difference between the price at which the product is sold and the cost of providing the product.",
+          "options": [
+            "Value",
+            "Cost",
+            "Profit",
+            "Design"
+          ],
+          "answer": "Profit"
+        },
+        {
+          "question": "Which of the following is an example of hidden cost?",
+          "options": [
+            "Product’s gain or loss of market share",
+            "Company’s stock price changes",
+            "Position in the market for future",
+            "All of these"
+          ],
+          "answer": "All of these"
+        },
+        {
+          "question": "Software development is not a consideration in design and development costs.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "What is the primary focus of Design for Manufacturing?",
+          "options": [
+            "Maximizing part complexity",
+            "Minimizing manufacturing operations",
+            "Increasing part production cost",
+            "Ignoring assembly processes"
+          ],
+          "answer": "Minimizing manufacturing operations"
+        },
+        {
+          "question": "Lack of communication between product developers and the related departments is a common problem associated with the implementation of the design review process.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "What is the primary advantage of minimizing the number of components in a product?",
+          "options": [
+            "Increased assembly costs",
+            "Improved reliability",
+            "Complex disassembly",
+            "Higher work-in-process"
+          ],
+          "answer": "Improved reliability"
+        },
+        {
+          "question": "__________ of a product is a function of design parameters that are both intensive and extensive in nature.",
+          "options": [
+            "Assembly",
+            "Marketing",
+            "Supply",
+            "None of these"
+          ],
+          "answer": "Assembly"
+        },
+        {
+          "question": "A Disassembly Sequence Plan (DSP) uses mathematical techniques such as linear programming, dynamic programming, and graphical tools for disassembly.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "________ consists of assessing the end value to be realized by disassembling the product.",
+          "options": [
+            "Assembly analysis",
+            "Product analysis",
+            "Both of these",
+            "None of these"
+          ],
+          "answer": "Product analysis"
+        },
+        {
+          "question": "Predictive maintenance is based on the actual condition of the equipment rather than time or age factors.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "Which of the following is reason for not implementing DFMA?",
+          "options": [
+            "No Time",
+            "Low Assembly Costs",
+            "Low Volume",
+            "All of these"
+          ],
+          "answer": "All of these"
+        },
+        {
+          "question": "The goal of Total Productive Maintenance (TPM) is:",
+          "options": [
+            "Zero Defects",
+            "Zero Breakdowns",
+            "Zero Accidents",
+            "All of these"
+          ],
+          "answer": "All of these"
+        },
+        {
+          "question": "For planning a system review, a reviewer assesses risk levels by examining the firm's compliance with industry regulations.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "Xerox’s commitment is to generate waste material that cannot be recycled or remanufactured.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "Which is the technique for assisting management in costing and designing an environmentally effective manufacturing facility.",
+          "options": [
+            "Waste reduction",
+            "Life Cycle Analysis",
+            "Regeneration",
+            "Acceptance sampling"
+          ],
+          "answer": "Life Cycle Analysis"
+        },
+        {
+          "question": "Which factor considers the ease of repairing a product when determining its quality?",
+          "options": [
+            "Serviceability",
+            "Aesthetics",
+            "Conformance to Standards",
+            "Features"
+          ],
+          "answer": "Serviceability"
+        },
+        {
+          "question": "Reducing or eliminating waste is not considered an ongoing effort in effective large-volume manufacturing.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "A ________ item is a unit of product that does not satisfy one or more of the specifications of that product.",
+          "options": [
+            "Conforming",
+            "Nonconforming",
+            "Both of these",
+            "None of these"
+          ],
+          "answer": "Nonconforming"
+        },
+        {
+          "question": "In adjustment chart, what is the process called when EPC is implemented?",
+          "options": [
+            "Manual Process Control (MPC)",
+            "Automated Process Control (APC)",
+            "Static Process Control (SPC)",
+            "Dynamic Process Control (DPC)"
+          ],
+          "answer": "Automated Process Control (APC)"
+        },
+        {
+          "question": "In the factorial design, factors are varied together in such a way that all possible combinations of factor levels are tested.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "The control chart should be applied:",
+          "options": [
+            "To the control error",
+            "To the sequence of adjustment to the manipulated variables",
+            "Both of these",
+            "None of these"
+          ],
+          "answer": "Both of these"
+        },
+        {
+          "question": "Which R is called as the golden child in Three R’s?",
+          "options": [
+            "Reuse",
+            "Reduce",
+            "Repair",
+            "Recycle"
+          ],
+          "answer": "Recycle"
+        },
+        {
+          "question": "The third major source of waste is the materials and activities that are part of the value‐added operations and processes used to manufacture the product.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "Which type of patent is granted for plant variety made through asexual reproduction of plant varieties?",
+          "options": [
+            "Utility patent",
+            "Design patent",
+            "Plant patent",
+            "None of these"
+          ],
+          "answer": "Plant patent"
+        },
+        {
+          "question": "Which approach to problem-solving follows a step-by-step procedure?",
+          "options": [
+            "Analytical approach",
+            "Creative approach",
+            "Both of these",
+            "None of these"
+          ],
+          "answer": "Analytical approach"
+        },
+        {
+          "question": "Synthesis’ is the step where alternative solutions to problems are generated.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "Which characteristic involves being open-disapproved versatile in the approach to an issue?",
+          "options": [
+            "Availability",
+            "Flexibility",
+            "Originality",
+            "Problem security"
+          ],
+          "answer": "Flexibility"
+        },
+        {
+          "question": "What term is used for the intersection of a column and a row in a morphological box?",
+          "options": [
+            "Morphological field",
+            "Dimension",
+            "Parameter",
+            "Value"
+          ],
+          "answer": "Morphological field"
+        },
+        {
+          "question": "The solution space is derived through the process of cross-consistency assessment.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "Which method emphasizes innovation with an open mindset and starting from scratch?",
+          "options": [
+            "Globalization",
+            "Clean slate approach",
+            "Complexity",
+            "Traditionalism"
+          ],
+          "answer": "Clean slate approach"
+        },
+        {
+          "question": "Which of the following is upstream input in Value Chain Model of Frugal Innovation?",
+          "options": [
+            "Capital",
+            "Skills",
+            "Labor",
+            "All of these"
+          ],
+          "answer": "All of these"
+        },
+        {
+          "question": "The Delphi method helps the group reach consensus without the influence of strong members of the group.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "Which of the following ‘blocks to creativity’ believes that all indulgence in fantasy is a waste of time.",
+          "options": [
+            "Cultural block",
+            "Emotional block",
+            "Perceptual block",
+            "None of these"
+          ],
+          "answer": "Cultural block"
+        },
+        {
+          "question": "Most Additive Manufacturing machines employ a layer-based approach.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "What is the essential displaying system accessible to make 3D outlines?",
+          "options": [
+            "Wireframe",
+            "Surface",
+            "Solid Modelling",
+            "All of these"
+          ],
+          "answer": "All of these"
+        },
+        {
+          "question": "In which modeling techniques the geometrical database is wealthier and give data on surface associating model edges?",
+          "options": [
+            "Surface modeling",
+            "Wireframe modeling",
+            "Solid modeling",
+            "Geometric modeling"
+          ],
+          "answer": "Surface modeling"
+        },
+        {
+          "question": "What is the primary focus of part building in Rapid Prototyping?",
+          "options": [
+            "Manual adjustment",
+            "Automated processes",
+            "Crafting",
+            "Hand-held process"
+          ],
+          "answer": "Automated processes"
+        },
+        {
+          "question": "The 3DW process relies on cut CAD files for building models.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "In______, a surge of liquid material is shot out from a sprout?",
+          "options": [
+            "Holographic Interference Solidification",
+            "Ballistic Particle Manufacture",
+            "Solid Ground Curing",
+            "Beam Interference Solidification"
+          ],
+          "answer": "Ballistic Particle Manufacture"
+        },
+        {
+          "question": "In FDM, what is the material extrusion rate typically dependent upon?",
+          "options": [
+            "Nozzle color",
+            "Nozzle temperature",
+            "Nozzle speed",
+            "Nozzle size"
+          ],
+          "answer": "Nozzle speed"
+        },
+        {
+          "question": "A MJM machine constructs models utilizing a stage change printing yet connected in three\nmeasurements.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "What is the purpose of the excess material in LOM and PLT during the build process?",
+          "options": [
+            "It forms the final part",
+            "Acts as a support structure",
+            "Enhances UV lights exposure",
+            "Provides color variation"
+          ],
+          "answer": "Acts as a support structure"
+        },
+        {
+          "question": "Stereolithography (SL), depends on a photosensitive fluid sap which shapes a strong polymer when presented to bright (UV) light.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "A plant layout study is unnecessary when setting up a new plant.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "Which of the following factors in plant layout design is associated with the attributes of product such as size, shape and weight?",
+          "options": [
+            "Intricacy od the product",
+            "Processing time",
+            "Production volume of the product",
+            "Product physical characteristics"
+          ],
+          "answer": "Product physical characteristics"
+        },
+        {
+          "question": "Which of the following is an advantage of process or functional layout?",
+          "options": [
+            "Flexibility",
+            "Cost",
+            "Motivation",
+            "All of these"
+          ],
+          "answer": "All of these"
+        },
+        {
+          "question": "In functional layout, since there are various machines accessible it does not exhibit much equipment failure.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "________ layout is suggested for an item that is too overwhelming to move.",
+          "options": [
+            "Fixed-position",
+            "Cellular",
+            "Product",
+            "None of these"
+          ],
+          "answer": "Fixed-position"
+        },
+        {
+          "question": "Which of the following is not an advantage of fixed position layout?",
+          "options": [
+            "Promotes quality",
+            "Highly flexible",
+            "Space constraint",
+            "Minimum material movement"
+          ],
+          "answer": "Space constraint"
+        },
+        {
+          "question": "What does the ‘travel speed’ setting controls in slicing software mean?",
+          "options": [
+            "Regulating filament extrusion speed",
+            "Adjusting the speed between print locations",
+            "Changing layer height",
+            "Enhancing print preview accuracy"
+          ],
+          "answer": "Adjusting the speed between print locations"
+        },
+        {
+          "question": "What does the ‘Support Type’ setting in Cura determine?",
+          "options": [
+            "Type of material used for support",
+            "Placement of support structures",
+            "Adhesion to the build plate",
+            "Cooling fan speed"
+          ],
+          "answer": "Placement of support structures"
+        },
+        {
+          "question": "What is the purpose of the TECHB V30's enclosure (if applicable)?",
+          "options": [
+            "Enhance aesthetic appeal",
+            "Maintain a controlled printing environment",
+            "Increase print speed",
+            "Improve touchscreen responsiveness"
+          ],
+          "answer": "Maintain a controlled printing environment"
+        },
+        {
+          "question": "Product layouts are flexible and can react to changes in items or process plan.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "Which CIM component is associated with the design of products using computer technology?",
+          "options": [
+            "CAM",
+            "CAPP",
+            "CAD",
+            "CNC"
+          ],
+          "answer": "CAD"
+        },
+        {
+          "question": "Which of the following is not a component of manufacturing facilities?",
+          "options": [
+            "Production line",
+            "Stand-alone workstation and worker",
+            "Plant layout",
+            "Marketing strategies"
+          ],
+          "answer": "Marketing strategies"
+        },
+        {
+          "question": "Cost accounting is a part of manufacturing control function in manufacturing support.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "Which type of manufacturing system is most suitable for batch production?",
+          "options": [
+            "Fixed automation",
+            "Programmable automation",
+            "Flexible automation",
+            "Customer-engineering automation"
+          ],
+          "answer": "Programmable automation"
+        },
+        {
+          "question": "Which of the following activities is carried out in manufacturing of discrete products?",
+          "options": [
+            "Material handling",
+            "Inspection and testing",
+            "Coordination and control",
+            "All of these"
+          ],
+          "answer": "All of these"
+        },
+        {
+          "question": "Agriculture and mining are examples of tertiary industries in manufacturing.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "What term refers to the number of different products or part designs produced in a plant?",
+          "options": [
+            "Production complexity",
+            "Product diversity",
+            "Variety reduction",
+            "Product variety"
+          ],
+          "answer": "Product variety"
+        },
+        {
+          "question": "___________ is defined as the portion of time a productive resource is used relative to the time available under the definition of plant capacity.",
+          "options": [
+            "Work-in-process",
+            "Utilization",
+            "Automation",
+            "Plant variety"
+          ],
+          "answer": "Utilization"
+        },
+        {
+          "question": "In a closed-loop control system, the output variable is not compared with an input parameter.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "In which of the following level of automation CNC machine tools and similar production equipment, industrial robots, material handling equipment can be done.",
+          "options": [
+            "Machine level",
+            "Plant level",
+            "Device level",
+            "Enterprise level"
+          ],
+          "answer": "Machine level"
+        },
+        {
+          "question": "Which of the following processes involve obtaining a geometric CAD model from scanned 3D points?",
+          "options": [
+            "Forward engineering",
+            "Reverse engineering",
+            "Digital engineering",
+            "Rapid prototyping"
+          ],
+          "answer": "Reverse engineering"
+        },
+        {
+          "question": "The prototype is developed before the creation of a CAD model in the reverse engineering process.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "What is the first fundamental step in which the acquired image is created in the software as a set of points?",
+          "options": [
+            "Mesh Generation",
+            "Alignment",
+            "Post processing",
+            "Acquisition"
+          ],
+          "answer": "Acquisition"
+        },
+        {
+          "question": "The mesh generation converts a set of 3D points to data constituted by a set of triangles.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        },
+        {
+          "question": "When data is generated by RE hardware, what does RE software turns it into?",
+          "options": [
+            "2D cross-sectional images",
+            "3D geometric models",
+            "Rapid prototyping models",
+            "Destructive models"
+          ],
+          "answer": "3D geometric models"
+        },
+        {
+          "question": "What is the primary limitation of Coordinate Measuring Machine (CMM) in digitizing complex surfaces?",
+          "options": [
+            "Lack of scanning speed",
+            "Lack or accuracy",
+            "Lack of number DOF",
+            "Lack of continuous deflection output"
+          ],
+          "answer": "Lack of number DOF"
+        },
+        {
+          "question": "Commercial software is not involved in point processing tasks in RE.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "False"
+        },
+        {
+          "question": "Which of the following is not an advantage of non-contact mode of RE?",
+          "options": [
+            "No physical contact",
+            "Inability to detect colors",
+            "God accuracy and resolution",
+            "Fast digitizing of substantial volumes"
+          ],
+          "answer": "Inability to detect colors"
+        },
+        {
+          "question": "________ benchmarking examines how companies compete and is ideal for corporations with a long-term perspective.",
+          "options": [
+            "Performance",
+            "Strategic",
+            "Process",
+            "None of these"
+          ],
+          "answer": "Strategic"
+        },
+        {
+          "question": "Performance metrics in benchmarking gives numerical standards against which a client’s own processes can be compared.",
+          "options": [
+            "True",
+            "False"
+          ],
+          "answer": "True"
+        }
+      ]
+
+        // --- DOM Elements ---
+        const questionContainer = document.getElementById('question-container');
+        const questionElement = document.getElementById('question');
+        const optionsElement = document.getElementById('options');
+        const resultElement = document.getElementById('result');
+        const progressTextElement = document.getElementById('progress-text');
+        const progressBarElement = document.getElementById('progress-bar');
+        const progressPercentageElement = document.getElementById('progress-percentage');
+        const finalScoreContainer = document.getElementById('final-score-container');
+        const finalScoreElement = document.getElementById('final-score');
+        const scoreDetailElement = document.querySelector('.score-detail');
+        const scoreCircleProgress = document.querySelector('.circle-progress');
+        const scoreText = document.querySelector('.score-text');
+        const restartButton = document.getElementById('restart-button');
+
+        // --- Quiz State ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let questionTimeout;
+        let shuffledQuestions = [];
+        const totalQuestions = quizData.length;
+        let confettiInstance = null;
+
+        // --- Helper Functions ---
+        
+        // Fisher-Yates shuffle algorithm
+        function shuffleArray(array) {
+            let currentIndex = array.length;
+            let temporaryValue, randomIndex;
+            
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+                
+                temporaryValue = array[currentIndex];
+                array[currentIndex] = array[randomIndex];
+                array[randomIndex] = temporaryValue;
+            }
+            
+            return array;
+        }
+
+        // Function to prepare the quiz
+        function prepareQuiz() {
+            // Deep copy quiz data
+            shuffledQuestions = JSON.parse(JSON.stringify(quizData));
+            
+            // Shuffle questions
+            shuffledQuestions = shuffleArray(shuffledQuestions);
+            
+            // Shuffle options for each question
+            shuffledQuestions.forEach(question => {
+                const optionsWithCorrectFlag = question.options.map(option => ({
+                    text: option,
+                    isCorrect: (option === question.answer)
+                }));
+                
+                const shuffledOptions = shuffleArray(optionsWithCorrectFlag);
+                
+                question.options = shuffledOptions.map(option => option.text);
+                const correctOptionIndex = shuffledOptions.findIndex(option => option.isCorrect);
+                question.answer = shuffledOptions[correctOptionIndex].text;
+            });
+        }
+
+        // Update progress indicators
+        function updateProgress() {
+            const percentage = Math.round(((currentQuestionIndex) / totalQuestions) * 100);
+            progressTextElement.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
+            progressBarElement.style.width = `${percentage}%`;
+            progressPercentageElement.textContent = `${percentage}%`;
+        }
+
+        // --- Main Functions ---
+        function loadQuestion() {
+            // Clear previous timeout
+            clearTimeout(questionTimeout);
+
+            // Hide final score, show question area
+            finalScoreContainer.style.display = 'none';
+            questionContainer.style.display = 'block';
+            resultElement.textContent = '';
+            resultElement.className = ''; // Clear result styling classes
+            optionsElement.innerHTML = '';
+
+            if (currentQuestionIndex >= shuffledQuestions.length) {
+                // Quiz finished
+                showFinalScore();
+                return;
+            }
+
+            // Get current question
+            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+
+            // Display question with animation
+            questionElement.classList.remove('fade-in');
+            void questionElement.offsetWidth; // Force reflow
+            questionElement.classList.add('fade-in');
+            questionElement.innerHTML = currentQuestion.question;
+            
+            // Render LaTeX if needed
+            if (typeof MathJax !== 'undefined' && currentQuestion.question.includes('$')) {
+                MathJax.typesetPromise([questionElement]).catch((err) => console.log('MathJax error:', err));
+            }
+
+            // Update progress indicators
+            updateProgress();
+
+            // Create option buttons with animation
+            optionsElement.classList.remove('options-container');
+            void optionsElement.offsetWidth; // Force reflow
+            optionsElement.classList.add('options-container');
+            
+            currentQuestion.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.onclick = () => selectAnswer(option, button);
+                
+                // Apply staggered animation delay for options
+                button.style.animationDelay = `${0.2 + (index * 0.1)}s`;
+                
+                optionsElement.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedOption, button) {
+            const correctAnswer = shuffledQuestions[currentQuestionIndex].answer;
+            const buttons = optionsElement.querySelectorAll('button');
+
+            // Disable all buttons
+            buttons.forEach(btn => btn.disabled = true);
+
+            if (selectedOption === correctAnswer) {
+                score++;
+                resultElement.textContent = "Correct!";
+                resultElement.className = 'result-correct';
+                button.classList.add('correct');
+            } else {
+                resultElement.textContent = `Incorrect! The correct answer is: ${correctAnswer}`;
+                resultElement.className = 'result-incorrect';
+                button.classList.add('incorrect');
+
+                // Highlight correct answer
+                buttons.forEach(btn => {
+                    if (btn.textContent === correctAnswer) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+
+            // Move to next question after delay
+            currentQuestionIndex++;
+            questionTimeout = setTimeout(loadQuestion, 1800);
+        }
+
+        function showFinalScore() {
+            // Hide question elements
+            questionContainer.style.display = 'none';
+            document.getElementById('progress-container').style.display = 'none';
+            resultElement.style.display = 'none';
+
+            // Calculate score percentage
+            const percentage = Math.round((score / totalQuestions) * 100);
+            
+            // Update final score display
+            finalScoreContainer.style.display = 'block';
+            finalScoreElement.textContent = `Your Score: ${score}/${totalQuestions}`;
+            
+            // Update score circle
+            const circumference = 2 * Math.PI * 80; // 2πr where r=80
+            const dashArray = (percentage / 100) * circumference;
+            scoreCircleProgress.style.strokeDasharray = `${dashArray} ${circumference}`;
+            scoreText.textContent = `${percentage}%`;
+            
+            // Update message based on score
+            if (percentage >= 90) {
+                scoreDetailElement.textContent = "Outstanding! You've mastered this topic!";
+                // Start confetti for excellent scores
+                startConfetti();
+            } else if (percentage >= 70) {
+                scoreDetailElement.textContent = "Great work! You have a strong understanding!";
+            } else if (percentage >= 50) {
+                scoreDetailElement.textContent = "Good effort! Keep practicing to improve!";
+            } else {
+                scoreDetailElement.textContent = "Keep studying! You'll improve with practice.";
+            }
+        }
+
+        function startConfetti() {
+            if (confettiInstance) confettiInstance.clear();
+            
+            const confettiSettings = {
+                target: 'confetti-canvas',
+                max: 200,
+                size: 1.5,
+                animate: true,
+                props: ['circle', 'square', 'triangle', 'line'],
+                colors: [[165, 104, 246], [99, 102, 241], [244, 114, 182], [248, 113, 113], [16, 185, 129]],
+                clock: 25,
+                rotate: true,
+                start_from_edge: true,
+                respawn: true
+            };
+            
+            confettiInstance = new ConfettiGenerator(confettiSettings);
+            confettiInstance.render();
+            
+            // Stop confetti after 5 seconds
+            setTimeout(() => {
+                if (confettiInstance) {
+                    confettiInstance.clear();
+                    confettiInstance = null;
+                }
+            }, 5000);
+        }
+
+        function restartQuiz() {
+            // Reset quiz state
+            currentQuestionIndex = 0;
+            score = 0;
+            
+            // Stop confetti if running
+            if (confettiInstance) {
+                confettiInstance.clear();
+                confettiInstance = null;
+            }
+            
+            // Show progress container again
+            document.getElementById('progress-container').style.display = 'flex';
+            resultElement.style.display = 'block';
+            
+            // Prepare and start quiz
+            prepareQuiz();
+            loadQuestion();
+        }
+
+        // --- Event Listeners ---
+        restartButton.addEventListener('click', restartQuiz);
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            prepareQuiz();
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
