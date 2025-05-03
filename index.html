@@ -88,6 +88,17 @@
             padding: 35px 40px;
         }
 
+        #round-indicator {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+
         #question-container {
             margin-bottom: 25px;
         }
@@ -227,15 +238,34 @@
             transition: width 0.3s ease;
         }
 
+        #interim-score-container {
+            text-align: center;
+            padding: 20px 0;
+        }
+
         #final-score-container {
             text-align: center;
             padding: 20px 0;
         }
 
-        #final-score {
-            font-size: 2rem;
+        .score-header {
+            font-size: 1.5rem;
             font-weight: 700;
-            margin: 20px 0;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+
+        .score-section {
+            background-color: var(--neutral-100);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .score-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 10px 0;
             color: var(--primary-dark);
         }
 
@@ -247,9 +277,9 @@
 
         .score-circle {
             position: relative;
-            width: 180px;
-            height: 180px;
-            margin: 0 auto 30px;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
         }
 
         .circle-bg {
@@ -273,12 +303,12 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 700;
             color: var(--primary-dark);
         }
 
-        #restart-button {
+        #continue-button, #restart-button {
             background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
             color: white;
             border: none;
@@ -290,14 +320,15 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
             font-family: 'Poppins', sans-serif;
+            margin-top: 10px;
         }
 
-        #restart-button:hover {
+        #continue-button:hover, #restart-button:hover {
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
         }
 
-        #restart-button:active {
+        #continue-button:active, #restart-button:active {
             transform: translateY(-1px);
         }
 
@@ -343,17 +374,21 @@
                 font-size: 0.95rem;
             }
             
-            #final-score {
-                font-size: 1.8rem;
+            .score-value {
+                font-size: 1.6rem;
             }
             
             .score-circle {
-                width: 150px;
-                height: 150px;
+                width: 120px;
+                height: 120px;
             }
             
             .score-text {
-                font-size: 2rem;
+                font-size: 1.7rem;
+            }
+            
+            .score-header {
+                font-size: 1.3rem;
             }
         }
     </style>
@@ -365,6 +400,7 @@
             <h1>Product Realization Quiz</h1>
         </div>
         <div class="quiz-content">
+            <div id="round-indicator">Round 1: Initial Assessment</div>
             <div id="question-container">
                 <p id="question" class="fade-in">Loading question...</p>
                 <div id="options" class="options-container">
@@ -373,28 +409,60 @@
             </div>
             <div id="result"></div>
             <div id="progress-container">
-                <div id="progress-text">Question 1 of 30</div>
+                <div id="progress-text">Question 1 of 5</div>
                 <div id="progress-bar-container">
-                    <div id="progress-bar" style="width: 3.33%"></div>
+                    <div id="progress-bar" style="width: 20%"></div>
                 </div>
-                <div id="progress-percentage">3%</div>
+                <div id="progress-percentage">20%</div>
             </div>
-            <div id="final-score-container" style="display: none;">
-                <div class="score-circle">
-                    <svg width="180" height="180" viewBox="0 0 180 180">
-                        <defs>
-                            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stop-color="#6366F1" />
-                                <stop offset="100%" stop-color="#8B5CF6" />
-                            </linearGradient>
-                        </defs>
-                        <circle class="circle-bg" cx="90" cy="90" r="80"></circle>
-                        <circle class="circle-progress" cx="90" cy="90" r="80" stroke-dasharray="0 502.4" stroke-dashoffset="0"></circle>
-                    </svg>
-                    <div class="score-text">0%</div>
+            
+            <div id="interim-score-container" style="display: none;">
+                <div class="score-header">Round 1 Complete</div>
+                <div class="score-section">
+                    <div class="score-circle">
+                        <svg width="150" height="150" viewBox="0 0 150 150">
+                            <defs>
+                                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <stop offset="0%" stop-color="#6366F1" />
+                                    <stop offset="100%" stop-color="#8B5CF6" />
+                                </linearGradient>
+                            </defs>
+                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle class="circle-progress" id="round1-circle" cx="75" cy="75" r="65" stroke-dasharray="0 408.4" stroke-dashoffset="0"></circle>
+                        </svg>
+                        <div class="score-text" id="round1-percent">0%</div>
+                    </div>
+                    <p class="score-value" id="round1-score">Your Score: 0/5</p>
+                    <p class="score-detail" id="round1-message">Great effort! Let's review your incorrect answers.</p>
                 </div>
-                <p id="final-score">Your Score: 0/30</p>
-                <p class="score-detail">Great effort! Keep learning and improving.</p>
+                <button id="continue-button">Continue to Round 2</button>
+            </div>
+            
+            <div id="final-score-container" style="display: none;">
+                <div class="score-header">Quiz Complete</div>
+                
+                <div class="score-section">
+                    <h3>Round 1 Results</h3>
+                    <p class="score-value" id="final-round1-score">Score: 0/5</p>
+                </div>
+                
+                <div class="score-section">
+                    <h3>Round 2 Results</h3>
+                    <p class="score-value" id="final-round2-score">Score: 0/0</p>
+                </div>
+                
+                <div class="score-section">
+                    <h3>Overall Performance</h3>
+                    <div class="score-circle">
+                        <svg width="150" height="150" viewBox="0 0 150 150">
+                            <circle class="circle-bg" cx="75" cy="75" r="65"></circle>
+                            <circle class="circle-progress" id="final-circle" cx="75" cy="75" r="65" stroke-dasharray="0 408.4" stroke-dashoffset="0"></circle>
+                        </svg>
+                        <div class="score-text" id="final-percent">0%</div>
+                    </div>
+                    <p class="score-detail" id="final-message">Great effort! Keep learning and improving.</p>
+                </div>
+                
                 <button id="restart-button">Restart Quiz</button>
             </div>
         </div>
@@ -1519,6 +1587,7 @@
       ]
 
         // --- DOM Elements ---
+        const roundIndicator = document.getElementById('round-indicator');
         const questionContainer = document.getElementById('question-container');
         const questionElement = document.getElementById('question');
         const optionsElement = document.getElementById('options');
@@ -1526,19 +1595,31 @@
         const progressTextElement = document.getElementById('progress-text');
         const progressBarElement = document.getElementById('progress-bar');
         const progressPercentageElement = document.getElementById('progress-percentage');
+        const interimScoreContainer = document.getElementById('interim-score-container');
         const finalScoreContainer = document.getElementById('final-score-container');
-        const finalScoreElement = document.getElementById('final-score');
-        const scoreDetailElement = document.querySelector('.score-detail');
-        const scoreCircleProgress = document.querySelector('.circle-progress');
-        const scoreText = document.querySelector('.score-text');
+        const round1Circle = document.getElementById('round1-circle');
+        const round1Percent = document.getElementById('round1-percent');
+        const round1Score = document.getElementById('round1-score');
+        const round1Message = document.getElementById('round1-message');
+        const finalRound1Score = document.getElementById('final-round1-score');
+        const finalRound2Score = document.getElementById('final-round2-score');
+        const finalCircle = document.getElementById('final-circle');
+        const finalPercent = document.getElementById('final-percent');
+        const finalMessage = document.getElementById('final-message');
+        const continueButton = document.getElementById('continue-button');
         const restartButton = document.getElementById('restart-button');
 
         // --- Quiz State ---
+        let currentRound = 1;
         let currentQuestionIndex = 0;
-        let score = 0;
+        let scoreRound1 = 0;
+        let scoreRound2 = 0;
+        let incorrectQuestions = [];
         let questionTimeout;
         let shuffledQuestions = [];
-        const totalQuestions = quizData.length;
+        let round2Questions = [];
+        let totalQuestionsRound1 = 0;
+        let totalQuestionsRound2 = 0;
         let confettiInstance = null;
 
         // --- Helper Functions ---
@@ -1567,6 +1648,7 @@
             
             // Shuffle questions
             shuffledQuestions = shuffleArray(shuffledQuestions);
+            totalQuestionsRound1 = shuffledQuestions.length;
             
             // Shuffle options for each question
             shuffledQuestions.forEach(question => {
@@ -1585,6 +1667,7 @@
 
         // Update progress indicators
         function updateProgress() {
+            const totalQuestions = currentRound === 1 ? totalQuestionsRound1 : totalQuestionsRound2;
             const percentage = Math.round(((currentQuestionIndex) / totalQuestions) * 100);
             progressTextElement.textContent = `Question ${currentQuestionIndex + 1} of ${totalQuestions}`;
             progressBarElement.style.width = `${percentage}%`;
@@ -1596,21 +1679,37 @@
             // Clear previous timeout
             clearTimeout(questionTimeout);
 
-            // Hide final score, show question area
+            // Hide score containers, show question area
+            interimScoreContainer.style.display = 'none';
             finalScoreContainer.style.display = 'none';
             questionContainer.style.display = 'block';
+            document.getElementById('progress-container').style.display = 'flex';
+            resultElement.style.display = 'block';
             resultElement.textContent = '';
             resultElement.className = ''; // Clear result styling classes
             optionsElement.innerHTML = '';
 
-            if (currentQuestionIndex >= shuffledQuestions.length) {
-                // Quiz finished
-                showFinalScore();
+            // Update round indicator
+            roundIndicator.textContent = currentRound === 1 ? 
+                "Round 1: Initial Assessment" : 
+                "Round 2: Review Incorrect Answers";
+
+            // Check if we've reached the end of the current round's questions
+            const currentQuestions = currentRound === 1 ? shuffledQuestions : round2Questions;
+            
+            if (currentQuestionIndex >= currentQuestions.length) {
+                if (currentRound === 1) {
+                    // End of round 1
+                    showInterimScore();
+                } else {
+                    // End of round 2 (entire quiz)
+                    showFinalScore();
+                }
                 return;
             }
 
             // Get current question
-            const currentQuestion = shuffledQuestions[currentQuestionIndex];
+            const currentQuestion = currentQuestions[currentQuestionIndex];
 
             // Display question with animation
             questionElement.classList.remove('fade-in');
@@ -1644,14 +1743,20 @@
         }
 
         function selectAnswer(selectedOption, button) {
-            const correctAnswer = shuffledQuestions[currentQuestionIndex].answer;
+            const currentQuestions = currentRound === 1 ? shuffledQuestions : round2Questions;
+            const correctAnswer = currentQuestions[currentQuestionIndex].answer;
             const buttons = optionsElement.querySelectorAll('button');
 
             // Disable all buttons
             buttons.forEach(btn => btn.disabled = true);
 
             if (selectedOption === correctAnswer) {
-                score++;
+                if (currentRound === 1) {
+                    scoreRound1++;
+                } else {
+                    scoreRound2++;
+                }
+                
                 resultElement.textContent = "Correct!";
                 resultElement.className = 'result-correct';
                 button.classList.add('correct');
@@ -1659,6 +1764,11 @@
                 resultElement.textContent = `Incorrect! The correct answer is: ${correctAnswer}`;
                 resultElement.className = 'result-incorrect';
                 button.classList.add('incorrect');
+
+                // In round 1, track incorrect questions for round 2
+                if (currentRound === 1) {
+                    incorrectQuestions.push(currentQuestions[currentQuestionIndex]);
+                }
 
                 // Highlight correct answer
                 buttons.forEach(btn => {
@@ -1673,36 +1783,88 @@
             questionTimeout = setTimeout(loadQuestion, 1800);
         }
 
-        function showFinalScore() {
+        function showInterimScore() {
             // Hide question elements
             questionContainer.style.display = 'none';
             document.getElementById('progress-container').style.display = 'none';
             resultElement.style.display = 'none';
 
             // Calculate score percentage
-            const percentage = Math.round((score / totalQuestions) * 100);
+            const percentage = Math.round((scoreRound1 / totalQuestionsRound1) * 100);
             
-            // Update final score display
-            finalScoreContainer.style.display = 'block';
-            finalScoreElement.textContent = `Your Score: ${score}/${totalQuestions}`;
+            // Update round 1 score display
+            interimScoreContainer.style.display = 'block';
+            round1Score.textContent = `Your Score: ${scoreRound1}/${totalQuestionsRound1}`;
             
             // Update score circle
-            const circumference = 2 * Math.PI * 80; // 2πr where r=80
+            const circumference = 2 * Math.PI * 65; // 2πr where r=65
             const dashArray = (percentage / 100) * circumference;
-            scoreCircleProgress.style.strokeDasharray = `${dashArray} ${circumference}`;
-            scoreText.textContent = `${percentage}%`;
+            round1Circle.style.strokeDasharray = `${dashArray} ${circumference}`;
+            round1Percent.textContent = `${percentage}%`;
             
             // Update message based on score
             if (percentage >= 90) {
-                scoreDetailElement.textContent = "Outstanding! You've mastered this topic!";
+                round1Message.textContent = "Outstanding! You've mastered this material!";
+            } else if (percentage >= 70) {
+                round1Message.textContent = "Great work! Let's review the questions you missed.";
+            } else if (percentage >= 50) {
+                round1Message.textContent = "Good effort! Let's focus on the areas you need to improve.";
+            } else {
+                round1Message.textContent = "Let's review the areas where you need more practice.";
+            }
+
+            // Prepare round 2 questions from incorrect answers
+            round2Questions = incorrectQuestions;
+            totalQuestionsRound2 = round2Questions.length;
+            
+            // If all questions were answered correctly, update UI accordingly
+            if (round2Questions.length === 0) {
+                round1Message.textContent = "Perfect score! You've answered all questions correctly!";
+                continueButton.textContent = "View Final Results";
+                // Start confetti for perfect score
+                startConfetti();
+            }
+        }
+
+        function showFinalScore() {
+            // Hide question elements
+            questionContainer.style.display = 'none';
+            document.getElementById('progress-container').style.display = 'none';
+            resultElement.style.display = 'none';
+            interimScoreContainer.style.display = 'none';
+
+            // Calculate overall score percentage
+            const totalCorrect = scoreRound1 + scoreRound2;
+            const totalQuestions = totalQuestionsRound1;
+            const percentage = Math.round((totalCorrect / totalQuestions) * 100);
+            
+            // Update final score display
+            finalScoreContainer.style.display = 'block';
+            finalRound1Score.textContent = `Score: ${scoreRound1}/${totalQuestionsRound1}`;
+            
+            if (totalQuestionsRound2 > 0) {
+                finalRound2Score.textContent = `Score: ${scoreRound2}/${totalQuestionsRound2}`;
+            } else {
+                finalRound2Score.textContent = `Perfect in Round 1! No review needed.`;
+            }
+            
+            // Update score circle
+            const circumference = 2 * Math.PI * 65; // 2πr where r=65
+            const dashArray = (percentage / 100) * circumference;
+            finalCircle.style.strokeDasharray = `${dashArray} ${circumference}`;
+            finalPercent.textContent = `${percentage}%`;
+            
+            // Update message based on score
+            if (percentage >= 90) {
+                finalMessage.textContent = "Outstanding! You've mastered this topic!";
                 // Start confetti for excellent scores
                 startConfetti();
             } else if (percentage >= 70) {
-                scoreDetailElement.textContent = "Great work! You have a strong understanding!";
+                finalMessage.textContent = "Great work! You have a strong understanding!";
             } else if (percentage >= 50) {
-                scoreDetailElement.textContent = "Good effort! Keep practicing to improve!";
+                finalMessage.textContent = "Good effort! Keep practicing to improve!";
             } else {
-                scoreDetailElement.textContent = "Keep studying! You'll improve with practice.";
+                finalMessage.textContent = "Keep studying! You'll improve with practice.";
             }
         }
 
@@ -1734,34 +1896,15 @@
             }, 5000);
         }
 
-        function restartQuiz() {
-            // Reset quiz state
+        function startRound2() {
+            currentRound = 2;
             currentQuestionIndex = 0;
-            score = 0;
-            
-            // Stop confetti if running
-            if (confettiInstance) {
-                confettiInstance.clear();
-                confettiInstance = null;
-            }
-            
-            // Show progress container again
-            document.getElementById('progress-container').style.display = 'flex';
-            resultElement.style.display = 'block';
-            
-            // Prepare and start quiz
-            prepareQuiz();
             loadQuestion();
         }
 
-        // --- Event Listeners ---
-        restartButton.addEventListener('click', restartQuiz);
-
-        // --- Initial Load ---
-        document.addEventListener('DOMContentLoaded', () => {
-            prepareQuiz();
-            loadQuestion();
-        });
-    </script>
-</body>
-</html>
+        function restartQuiz() {
+            // Reset quiz state
+            currentRound = 1;
+            currentQuestionIndex = 0;
+            scoreRound1 = 0;
+            scoreRound2 = 0;
