@@ -1908,3 +1908,33 @@
             currentQuestionIndex = 0;
             scoreRound1 = 0;
             scoreRound2 = 0;
+            incorrectQuestions = [];
+            
+            // Stop confetti if running
+            if (confettiInstance) {
+                confettiInstance.clear();
+                confettiInstance = null;
+            }
+            
+            // Show progress container again
+            document.getElementById('progress-container').style.display = 'flex';
+            resultElement.style.display = 'block';
+            roundIndicator.textContent = "Round 1: Initial Assessment";
+            
+            // Prepare and start quiz
+            prepareQuiz();
+            loadQuestion();
+        }
+
+        // --- Event Listeners ---
+        continueButton.addEventListener('click', startRound2);
+        restartButton.addEventListener('click', restartQuiz);
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            prepareQuiz();
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
